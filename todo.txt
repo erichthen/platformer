@@ -1,0 +1,7 @@
+add more moving platforms
+more levels
+more types of obstacles
+add levels where lava moves up while block has to move up and vice versa
+more colors and features
+randomize platform generation
+
