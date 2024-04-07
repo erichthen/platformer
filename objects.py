@@ -47,6 +47,7 @@ class Player:
                     self.velocity[1] = 0
 
         
+
     def update(self, platforms, event):
         
 
@@ -133,6 +134,7 @@ class Platform:
         self.x_direction = 1
         self.y_direction = 1
 
+
     def update(self):
         
         if self.x_move_speed != 0:
@@ -145,6 +147,7 @@ class Platform:
             if abs(self.rect.y - self.start_y) > self.y_distance:
                 self.y_direction *= -1
     
+
     def render(self, screen): #pass in an rgb
         pygame.draw.rect(screen, self.color, self.rect)
 
@@ -152,8 +155,15 @@ class Platform:
 
 class Lava:
     
-    def __init__(self, x, y, w, h):
-        self.rect = pygame.Rect(x, y, w, h);
+    def __init__(self, x, y, w, h, rising_speed = 0):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.rising_speed = rising_speed
+
+    def update(self):
+        self.rect.y -= self.rising_speed
 
     def render(self, screen):
         pygame.draw.rect(screen, (255,0,0), self.rect)
+
+    def reset(self):
+        self.rect.x, self.rect.y = 0, 580

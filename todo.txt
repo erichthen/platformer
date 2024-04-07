@@ -1,7 +1,13 @@
-add more moving platforms
-more levels
+debug arrow flash from level 4 flashing once at level one after respawn
+debug lava rising instantly instead of waiting when the player returns to lvl 4 after dying on it
+
+
+add circular and other types of movement for platforms
 more types of obstacles
-add levels where lava moves up while block has to move up and vice versa
-more colors and features
-randomize platform generation
+more colors, dynamic changes
+randomize platform generation //maybe
+new level: falling blocks to dodge
+make this game long as hell, more, more, more levels
+add checkpoints for easier testing
+
 
