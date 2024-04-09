@@ -1,12 +1,9 @@
-debug arrow flash from level 4 flashing once at level one after respawn
-debug lava rising instantly instead of waiting when the player returns to lvl 4 after dying on it
-
+platforms should not be rendered at all if invisible, rn the invisble ones can still be jumped on, fix this
 
 add circular and other types of movement for platforms
 more types of obstacles
 more colors, dynamic changes
 randomize platform generation //maybe
-new level: falling blocks to dodge
 make this game long as hell, more, more, more levels
 add checkpoints for easier testing
 

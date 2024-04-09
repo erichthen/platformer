@@ -1,4 +1,5 @@
 import pygame
+import random
 
 class Player:
 
@@ -121,7 +122,7 @@ class Platform:
 
 
     def __init__(self, x, y, width, height, color, 
-                 x_speed = 0, x_distance = 0, y_speed = 0, y_distance = 0):
+                 x_speed = 0, x_distance = 0, y_speed = 0, y_distance = 0, visible = True):
         
         self.rect = pygame.Rect(x, y, width, height)
         self.start_x = x
@@ -133,6 +134,7 @@ class Platform:
         self.y_distance = y_distance
         self.x_direction = 1
         self.y_direction = 1
+        self.visible = visible
 
 
     def update(self):
@@ -149,7 +151,11 @@ class Platform:
     
 
     def render(self, screen): #pass in an rgb
-        pygame.draw.rect(screen, self.color, self.rect)
+        if self.visible:
+            pygame.draw.rect(screen, self.color, self.rect)
+
+    def delete(self):
+        self.visible = False
 
 
 
@@ -167,3 +173,17 @@ class Lava:
 
     def reset(self):
         self.rect.x, self.rect.y = 0, 580
+
+
+
+class FallingLava:
+
+    def __init__(self, x, y, size):
+        self.rect = pygame.Rect(x, y, size, size)
+        self.fall_speed = random.randint(3, 7)
+
+    def update(self):
+        self.rect.y += self.fall_speed
+
+    def render(self, screen):
+        pygame.draw.rect(screen, (255, 0, 0), self.rect)

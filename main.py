@@ -1,5 +1,6 @@
 import pygame
-from objects import Player, Platform, Lava
+import random
+from objects import Player, Platform, Lava, FallingLava
 
 
 pygame.init()
@@ -29,6 +30,8 @@ player = Player(*FIRST_LEVEL_SPAWN_POINT)
 
 
 lava = Lava(0, 580, 600, 600)
+
+falling_lava_blocks = []
 
 #todo: sensibly randomize platform gen
 platforms_level1 = [
@@ -61,21 +64,33 @@ platforms_level3 = [
 platforms_level4 = [
 
     Platform(0, 300, 80, 20, MAGENTA),
-    Platform(100, 500, 80, 20, GREEN),
-    Platform(225, 400, 80, 20, GREEN),
-    Platform(300, 300, 80, 20, GREEN),
-    Platform(225, 200, 80, 20, GREEN, x_speed = 2, x_distance = 150),
-    Platform(300, 125, 80, 20, GREEN, x_speed = 1, x_distance = 100),
-    Platform(500, 50, 100, 20, MAGENTA)
+    Platform(300, 400, 80, 20, GREEN, x_speed = 4, x_distance = 150),
+    Platform(500, 325, 80, 20, GREEN),
+    Platform(400, 250, 80, 20, GREEN),
+    Platform(300, 175, 80, 20, GREEN),
+    Platform(500, 125, 100, 20, MAGENTA)
     
 ]
 
 platforms_level5 = [
 
-    Platform(0, 50, 100, 20, MAGENTA),
     Platform(0, 560, 600, 20, GREEN),
+    Platform(300, 510, 80, 20, GREEN),
+    Platform(375, 460, 80, 20, GREEN),
+    Platform(450, 410, 80, 20, GREEN),
+    Platform(525, 360, 100, 20, MAGENTA),
+
 
 ]
+
+platforms_level_6 = [
+
+    Platform(0, 360, 80, 20, MAGENTA)
+
+]
+
+level_5_start_time = None
+staircase_appeared = False
 
 #might want to make as a class when you add more than just platforms
 levels = {
@@ -99,9 +114,14 @@ levels = {
 
     5: {
         "platforms" : platforms_level5
+    },
+
+    6: {
+        "platforms" : platforms_level_6
     }
 
 }
+
 
 running = True
 
@@ -119,6 +139,7 @@ while running:
         
         if event.type == pygame.USEREVENT and player.waiting_to_respawn:
             current_level = 1
+            lava.reset()
             player.respawn(FIRST_LEVEL_SPAWN_POINT)
             pygame.time.set_timer(pygame.USEREVENT, 0) 
       
@@ -131,9 +152,16 @@ while running:
     screen.fill(BLACK)
 
 
+    if current_level == 4:
+        lava.rising_speed = 1  
+        lava.update()
+    else:
+        lava.rising_speed = 0  
+        lava.reset()  
+
     if player.check_lava_collision(lava) and not player.waiting_to_respawn:
         player.lava_collide()  
-        pygame.time.set_timer(pygame.USEREVENT, 1000)  
+        pygame.time.set_timer(pygame.USEREVENT, 500)  
 
 
     elif player.rect.left > WIDTH:
@@ -148,7 +176,7 @@ while running:
 
             player.rect.x, player.rect.y = -100, -100
             player.waiting_to_respawn = True
-            pygame.time.set_timer(pygame.USEREVENT, 1000)
+            pygame.time.set_timer(pygame.USEREVENT, 500)
 
 
     keys = pygame.key.get_pressed()
@@ -161,13 +189,62 @@ while running:
             player.velocity[0] = 5
         else:
             player.velocity[0] = 0
-    
+
+
+    if current_level == 5:
+
+        if level_5_start_time is None:
+            level_5_start_time = pygame.time.get_ticks()
+
+
+        levels[5]["platforms"][0].update()
+        levels[5]["platforms"][0].render(screen)
+
+
+        if pygame.time.get_ticks() - level_5_start_time > 13000 and not staircase_appeared:
+            falling_lava_blocks.clear()
+            staircase_appeared = True
+
+
+        if not staircase_appeared:
+            if random.randint(0, 100) < 5:
+                new_lava_x = random.randint(0, WIDTH - 30)
+                falling_lava_blocks.append(FallingLava(new_lava_x, 0, 30))
+
+            for lava_block in falling_lava_blocks[:]:
+                lava_block.update()
+                lava_block.render(screen)
+
+
+                if player.rect.colliderect(lava_block.rect):
+                    falling_lava_blocks.clear()
+                    player.waiting_to_respawn = True
+                    pygame.time.set_timer(pygame.USEREVENT, 500)
+                    break 
+
+
+                if lava_block.rect.y > 560:
+                    falling_lava_blocks.remove(lava_block)
+
+
+        if staircase_appeared:
+            for i in range(1, len(levels[5]["platforms"])):
+                levels[5]["platforms"][i].update()
+                levels[5]["platforms"][i].render(screen)
+
+
+        if not staircase_appeared:
+            if player.rect.right > WIDTH:
+                player.rect.right = WIDTH
+            
 
     current_platforms = levels[current_level]["platforms"]
 
-    for platform in current_platforms:
-        platform.update()
-        platform.render(screen)
+    if current_level != 5:
+
+        for platform in current_platforms:
+            platform.update()
+            platform.render(screen)
 
     player.update(current_platforms, RESET_FLAG)
     player.check_lava_collision(lava)
