@@ -28,7 +28,7 @@ class Player:
 
         for platform in platforms:
             
-            if self.rect.colliderect(platform.rect):
+            if self.rect.colliderect(platform.rect) and platform.visible:
 
                 if dx > 0:  # Moving right
                     self.rect.right = platform.rect.left
@@ -122,7 +122,7 @@ class Platform:
 
 
     def __init__(self, x, y, width, height, color, 
-                 x_speed = 0, x_distance = 0, y_speed = 0, y_distance = 0, visible = True):
+                 x_speed = 0, x_distance = 0, y_speed = 0, y_distance = 0, disappear = False, diss_time = 0):
         
         self.rect = pygame.Rect(x, y, width, height)
         self.start_x = x
@@ -134,28 +134,41 @@ class Platform:
         self.y_distance = y_distance
         self.x_direction = 1
         self.y_direction = 1
-        self.visible = visible
+        self.disappear = disappear
+        self.visible = True
+        self.last_toggle_time = pygame.time.get_ticks() if disappear else None #only matters if its a disappearing platform
+        self.diss_time = diss_time #time in between appearing
+
 
 
     def update(self):
+
+        if self.visible:
         
-        if self.x_move_speed != 0:
-            self.rect.x += self.x_move_speed * self.x_direction
-            if abs(self.rect.x - self.start_x) > self.x_distance:
-                self.x_direction *= -1
-        
-        if self.y_move_speed != 0:
-            self.rect.y += self.y_move_speed * self.y_direction
-            if abs(self.rect.y - self.start_y) > self.y_distance:
-                self.y_direction *= -1
+            if self.x_move_speed != 0:
+                self.rect.x += self.x_move_speed * self.x_direction
+                if abs(self.rect.x - self.start_x) > self.x_distance:
+                    self.x_direction *= -1
+
+            if self.y_move_speed != 0:
+                self.rect.y += self.y_move_speed * self.y_direction
+                if abs(self.rect.y - self.start_y) > self.y_distance:
+                    self.y_direction *= -1
     
 
-    def render(self, screen): #pass in an rgb
-        if self.visible:
-            pygame.draw.rect(screen, self.color, self.rect)
+    def render(self, screen): 
+            if self.visible:
+                pygame.draw.rect(screen, self.color, self.rect) #pass in an rgb val
 
-    def delete(self):
-        self.visible = False
+    def toggle_visibility(self):
+        self.visible = not self.visible
+        self.last_toggle_time = pygame.time.get_ticks()
+
+
+    def disappear_platform(self):
+       if self.disappear and pygame.time.get_ticks() - self.last_toggle_time > self.diss_time:  # 2 seconds
+            self.toggle_visibility()
+            self.last_toggle_time = pygame.time.get_ticks()
 
 
 

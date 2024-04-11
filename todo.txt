@@ -1,11 +1,11 @@
-platforms should not be rendered at all if invisible, rn the invisble ones can still be jumped on, fix this
-quick fix: make sure falling blocks dissapear as soon as they hit green plat
+
 
 add circular and other types of movement for platforms
+more disappearing platforms, moving disappearing platforms
 more types of obstacles
 more colors, dynamic changes
 randomize platform generation //maybe
-make this game long as hell, more, more, more levels
+make this game long as fuck
 add checkpoints for easier testing
 
 
