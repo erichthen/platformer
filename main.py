@@ -14,7 +14,7 @@ GREEN = (0, 255, 0)
 MAGENTA = (255, 0, 255)
 HOT_PINK = (255, 0, 127)
 
-text = 'JUMP: spacebar\nMOVE: arrows or <w,a,s,d>\n'
+text = 'JUMP: spacebar\nMOVE: arrows or <w,a,s>\n'
 new_lines = text.split('\n')
 font = pygame.font.Font('chosen_font.otf', 30) 
 
