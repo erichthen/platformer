@@ -127,8 +127,8 @@ platforms_level9 = [
 level_5_start_time = None
 show_arrow = False
 
-#might want to make as a class when you add more than just platforms
-#this mapping is to easily correspond platforms to current_level var
+#map current level var to platforms list 
+#todo prob a better way to map this
 levels = {
     1: {
         "platforms": platforms_level1
@@ -231,7 +231,7 @@ while running:
                 pygame.USEREVENT, RESPAWN_TIME, y_limit=510
             )
             if collided:
-                # Handle collision
+
                 continue
 
     elif current_level == 8:
