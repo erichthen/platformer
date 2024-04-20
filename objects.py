@@ -200,3 +200,26 @@ class FallingLava:
 
     def render(self, screen):
         pygame.draw.rect(screen, (255, 0, 0), self.rect)
+
+    @staticmethod
+    def spawn_falling_blocks(block_list, spawn_chance, width, min_size, max_size, y_start=0):
+        if random.randint(0, 100) < spawn_chance:
+            new_lava_x = random.randint(0, width - min_size)
+            size = random.randint(min_size, max_size)
+            block_list.append(FallingLava(new_lava_x, y_start, size))
+
+    
+    @staticmethod
+    def update_falling_blocks(block_list, screen, player, respawn_event, respawn_time, y_limit):
+        for lava_block in block_list[:]:
+            lava_block.update()
+            lava_block.render(screen)
+
+            if player.rect.colliderect(lava_block.rect):
+                block_list.clear()
+                player.waiting_to_respawn = True
+                pygame.time.set_timer(respawn_event, respawn_time)
+                break 
+
+            if lava_block.rect.y > y_limit:
+                block_list.remove(lava_block)

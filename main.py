@@ -1,11 +1,15 @@
 import pygame
-import random
 from objects import Player, Platform, Lava, FallingLava
 
 
 #=======setting up ========
 pygame.init()
 pygame.font.init()
+
+#for easier testing, var to spawn at any level
+initial_level = 1
+current_level = initial_level
+SPAWN_POINT = (30, 20) #spawn high and left, works with any level
 
 WIDTH, HEIGHT = 600, 600
 WHITE = (255, 255, 255)
@@ -14,11 +18,11 @@ GREEN = (0, 255, 0)
 MAGENTA = (255, 0, 255)
 HOT_PINK = (255, 0, 127)
 
-text = 'JUMP: spacebar\nMOVE: arrows or <w,a,s>\n'
-new_lines = text.split('\n')
+text = 'JUMP: spacebar\nMOVE: arrows or <a,d> or <j,l>\n'
+new_lines = text.split('\n') 
 font = pygame.font.Font('chosen_font.otf', 30) 
 
-FIRST_LEVEL_SPAWN_POINT = (75, 400)
+#FIRST_LEVEL_SPAWN_POINT = (75, 400)
 FPS = 60
 
 RESET_FLAG = pygame.USEREVENT + 1
@@ -35,13 +39,16 @@ pygame.display.set_caption("blok gam")
 
 clock = pygame.time.Clock()
 
-current_level = 1
+#current_level = 1
 
-player = Player(*FIRST_LEVEL_SPAWN_POINT) 
+#player = Player(*FIRST_LEVEL_SPAWN_POINT) 
+player = Player(*SPAWN_POINT)
 
 lava = Lava(0, 580, 600, 600)
 
-falling_lava_blocks = []
+falling_lava_blocks_level5 = []
+falling_lava_blocks_level8 = []
+
 
 platforms_level1 = [
     Platform(50, 500, 80, 20, MAGENTA),
@@ -103,7 +110,18 @@ platforms_level7 = [
 ]
 
 platforms_level8 = [
-    Platform(0, 530, 80, 20, MAGENTA)
+    
+    Platform(0, 530, 80, 20, MAGENTA),
+    Platform(220, 480, 180, 20, GREEN, x_speed = 3, x_distance = 125), 
+    Platform(475, 390, 80, 20, GREEN),
+    Platform(180, 300, 180, 20, GREEN, x_speed = 5, x_distance = 125), 
+    Platform(475, 210, 125, 20, MAGENTA)
+
+]
+
+platforms_level9 = [
+
+    Platform(0, 210, 100, 20, MAGENTA)
 ]
 
 level_5_start_time = None
@@ -135,6 +153,9 @@ levels = {
     },
     8: {
         "platforms" : platforms_level8
+    },
+    9: {
+        "platforms" : platforms_level9
     }
 }
 
@@ -158,11 +179,12 @@ while running:
                 player.jump()
         
         if event.type == pygame.USEREVENT and player.waiting_to_respawn:
-            current_level = 1
+            #current_level = 1
             lava.reset()
-            player.respawn(FIRST_LEVEL_SPAWN_POINT)
+            player.respawn(SPAWN_POINT)
             show_arrow = False
-            falling_lava_blocks.clear()
+            falling_lava_blocks_level5.clear()
+            falling_lava_blocks_level8.clear() 
             level_5_start_time = None
             pygame.time.set_timer(pygame.USEREVENT, 0) 
       
@@ -178,7 +200,7 @@ while running:
         y_off = 50
         for line in new_lines:
             intro_text = font.render(line, True, MAGENTA)
-            screen.blit(intro_text, (111, y_off))
+            screen.blit(intro_text, (99, y_off))
             y_off += 35
 
     if current_level == 4:
@@ -188,41 +210,43 @@ while running:
         lava.rising_speed = 0  
         lava.reset()  
 
+
     if current_level == 5:
 
         if level_5_start_time is None:
             level_5_start_time = pygame.time.get_ticks()
 
-
         if pygame.time.get_ticks() - level_5_start_time > 13000:
-            falling_lava_blocks.clear()
+            falling_lava_blocks_level5.clear()
             show_arrow = True
             screen.blit(continue_arrow, (240, 250))
 
 
         if not show_arrow:
+            FallingLava.spawn_falling_blocks(falling_lava_blocks_level5, spawn_chance = 7,
+                width = WIDTH, min_size = 20, max_size = 40, y_start = 0
+            )
 
-            if player.rect.right > WIDTH:   #can only progress when falling is done (arrow isnt shown)
-                player.rect.right = WIDTH
+            collided = FallingLava.update_falling_blocks(falling_lava_blocks_level5, screen, player,
+                pygame.USEREVENT, RESPAWN_TIME, y_limit=510
+            )
+            if collided:
+                # Handle collision
+                continue
 
-            if random.randint(0, 100) < 7: # change this val for fall frequency
-                new_lava_x = random.randint(0, WIDTH - 30)
-                falling_lava_blocks.append(FallingLava(new_lava_x, 0, random.randint(20, 40))) #change rand range for size
+    elif current_level == 8:
 
-            for lava_block in falling_lava_blocks[:]:
-                lava_block.update()
-                lava_block.render(screen)
+        FallingLava.spawn_falling_blocks(falling_lava_blocks_level8, spawn_chance = 3, 
+        width = WIDTH, min_size = 10, max_size = 20, y_start=0
+        )
 
+        collided =  FallingLava.update_falling_blocks(falling_lava_blocks_level8, screen, player,
+            pygame.USEREVENT, RESPAWN_TIME, y_limit = 580
+        )
 
-                if player.rect.colliderect(lava_block.rect):
-                    falling_lava_blocks.clear()
-                    player.waiting_to_respawn = True
-                    pygame.time.set_timer(pygame.USEREVENT, RESPAWN_TIME)
-                    break 
-
-                if lava_block.rect.y > 510:
-                    falling_lava_blocks.remove(lava_block)
-
+        if collided:
+            
+            continue
 
 
     #======= collision handling, level advancement  =========
@@ -252,9 +276,9 @@ while running:
 
     if not player.waiting_to_respawn:
 
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+        if keys[pygame.K_LEFT] or keys[pygame.K_a] or keys[pygame.K_j]:
             player.velocity[0] = -5
-        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        elif keys[pygame.K_RIGHT] or keys[pygame.K_d] or keys[pygame.K_l]:
             player.velocity[0] = 5
         else:
             player.velocity[0] = 0
@@ -273,6 +297,8 @@ while running:
 
     player.update(current_platforms, RESET_FLAG)
     player.check_lava_collision(lava)
+
+    #we need to get the lava †
     player.render(screen)
 
     lava.render(screen)
