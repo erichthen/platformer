@@ -8,5 +8,3 @@ give player a face, change it with direction
 
 
 
-
-
