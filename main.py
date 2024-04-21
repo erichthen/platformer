@@ -7,7 +7,7 @@ pygame.init()
 pygame.font.init()
 
 #for easier testing, var to spawn at any level
-initial_level = 1
+initial_level = 9
 current_level = initial_level
 SPAWN_POINT = (30, 20) #spawn high and left, works with any level
 
@@ -34,6 +34,19 @@ continue_arrow_rect = continue_arrow.get_rect()
 arrow_scaled_size = (int(continue_arrow_rect.width * 0.2), int(continue_arrow_rect.height * 0.2))
 continue_arrow = pygame.transform.scale(continue_arrow, arrow_scaled_size)
 
+#todo put in function
+dead_one = pygame.image.load("dead_one.jpg")
+dead_two = pygame.image.load("dead_two.jpg")
+bossboy = pygame.image.load("bossboy.jpg")
+bossboy_rect = bossboy.get_rect()
+dead_one_rect = dead_one.get_rect()
+dead_two_rect = dead_two.get_rect()
+dead_one_scaled = (int(dead_one_rect.width * 0.18), int(dead_one_rect.height * 0.18))
+dead_two_scaled = (int(dead_two_rect.width * 0.18), int(dead_two_rect.height * 0.18))
+boss_scaled = (int(bossboy_rect.width * 0.3), int(bossboy_rect.height * 0.3))
+dead_one = pygame.transform.scale(dead_one, dead_one_scaled)
+dead_two = pygame.transform.scale(dead_two, dead_two_scaled)
+bossboy = pygame.transform.scale(bossboy, boss_scaled)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("blok gam")
 
@@ -121,7 +134,13 @@ platforms_level8 = [
 
 platforms_level9 = [
 
-    Platform(0, 210, 100, 20, MAGENTA)
+    Platform(0, 210, 100, 20, MAGENTA),
+    Platform(150, 310, 500, 20, MAGENTA)
+
+]
+
+platforms_level10 = [
+    Platform(0, 310, 100, 20, MAGENTA)
 ]
 
 level_5_start_time = None
@@ -156,6 +175,9 @@ levels = {
     },
     9: {
         "platforms" : platforms_level9
+    },
+    10: {
+        "platforms" : platforms_level10
     }
 }
 
@@ -195,6 +217,7 @@ while running:
 
 
     #======= level specific logic =========
+    #you NEED to get this shit out of the game loop and put it into functions
             
     if current_level == 1:
         y_off = 50
@@ -247,6 +270,12 @@ while running:
         if collided:
             
             continue
+
+    if current_level == 9:
+
+        screen.blit(bossboy, (250, 410))
+        screen.blit(dead_one, (100, 540))
+        screen.blit(dead_two, (480, 540))
 
 
     #======= collision handling, level advancement  =========

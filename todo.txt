@@ -4,6 +4,10 @@
 more disappearing platforms, moving disappearing platforms
 other types of movement, other types of obstacles
 make this game long and unbearable
+make platforms that dissapate
+make the game loop shorter, factor into more functions and classes
+give player a face, change it with direction
+
 
 
 
