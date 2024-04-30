@@ -6,3 +6,4 @@ make the game loop shorter, factor into more functions and classes
 give player a face, change it with direction
 update vid after more levels completed
 
+q

@@ -1,15 +1,24 @@
 import pygame
 from objects import Player, Platform, Lava, FallingLava
 
+#todo: give player a face
 
 #=======setting up ========
-pygame.init()
-pygame.font.init()
 
-#for easier testing, var to spawn at any level
-initial_level = 9
+pygame.init()
+pygame.font.init() 
+
+#for easier testing, var to spawn at any level and to respawn at the same level
+#will make the game annoying by taking this away when finished ;<)
+initial_level = 2
 current_level = initial_level
-SPAWN_POINT = (30, 20) #spawn high and left, works with any level
+
+#for easier testing, set starting lvl to any lvl assigned to initial_level
+#but 30 20 is kinda off on level 1
+if current_level == 1:
+    SPAWN_POINT = (60, 20)
+else:
+    SPAWN_POINT = (30, 20)
 
 WIDTH, HEIGHT = 600, 600
 WHITE = (255, 255, 255)
@@ -20,7 +29,7 @@ HOT_PINK = (255, 0, 127)
 
 text = 'JUMP: spacebar\nMOVE: arrows or <a,d> or <j,l>\n'
 new_lines = text.split('\n') 
-font = pygame.font.Font('chosen_font.otf', 30) 
+font = pygame.font.Font('stuff/chosen_font.otf', 30) 
 
 #FIRST_LEVEL_SPAWN_POINT = (75, 400)
 FPS = 60
@@ -29,15 +38,15 @@ RESET_FLAG = pygame.USEREVENT + 1
 
 RESPAWN_TIME = 500
 
-continue_arrow = pygame.image.load("green_arrow.png")
+continue_arrow = pygame.image.load("stuff/green_arrow.png")
 continue_arrow_rect = continue_arrow.get_rect()
 arrow_scaled_size = (int(continue_arrow_rect.width * 0.2), int(continue_arrow_rect.height * 0.2))
 continue_arrow = pygame.transform.scale(continue_arrow, arrow_scaled_size)
 
 #todo put in function
-dead_one = pygame.image.load("dead_one.jpg")
-dead_two = pygame.image.load("dead_two.jpg")
-bossboy = pygame.image.load("bossboy.jpg")
+dead_one = pygame.image.load("stuff/characters/dead_one.jpg")
+dead_two = pygame.image.load("stuff/characters/dead_two.jpg")
+bossboy = pygame.image.load("stuff/characters/bossboy.jpg")
 bossboy_rect = bossboy.get_rect()
 dead_one_rect = dead_one.get_rect()
 dead_two_rect = dead_two.get_rect()
@@ -206,7 +215,7 @@ while running:
             player.respawn(SPAWN_POINT)
             show_arrow = False
             falling_lava_blocks_level5.clear()
-            falling_lava_blocks_level8.clear() 
+            falling_lava_blocks_level8.clear()
             level_5_start_time = None
             pygame.time.set_timer(pygame.USEREVENT, 0) 
       
@@ -218,6 +227,7 @@ while running:
 
     #======= level specific logic =========
     #you NEED to get this shit out of the game loop and put it into functions
+    #goal: this section should be consisted of way more function calls and way less direct logic
             
     if current_level == 1:
         y_off = 50
@@ -236,7 +246,8 @@ while running:
 
     if current_level == 5:
 
-        if level_5_start_time is None:
+        if level_5_start_time == None:
+
             level_5_start_time = pygame.time.get_ticks()
 
         if pygame.time.get_ticks() - level_5_start_time > 13000:
@@ -285,12 +296,19 @@ while running:
         player.lava_collide()  
         pygame.time.set_timer(pygame.USEREVENT, RESPAWN_TIME)
 
+
+    if current_level == 5 and not show_arrow:
+        if player.rect.right >= WIDTH:
+            player.rect.right = WIDTH
+
     elif player.rect.left > WIDTH:
 
-        if player.standing_on_platform or player.recently_on_last_platform:
-            current_level += 1
-            player.rect.x = 0
-            player.recently_on_last_platform = False
+        if player.standing_on_platform or player.recently_on_last_platform or show_arrow:
+
+                current_level += 1
+                player.rect.x = 0
+                player.recently_on_last_platform = False
+
 
         else:
 
