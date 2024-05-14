@@ -1,7 +1,8 @@
 import pygame
-from objects import Player, Platform, Lava, FallingLava
+from objects import Player, Platform, Lava, FallingLava, Boss
 
 #todo: give player a face
+#also, give him differnet faces depending on if he is going right, left, or jumping
 
 #=======setting up ========
 
@@ -10,7 +11,7 @@ pygame.font.init()
 
 #for easier testing, var to spawn at any level and to respawn at the same level
 #will make the game annoying by taking this away when finished ;<)
-initial_level = 1
+initial_level = 9
 current_level = initial_level
 
 #for easier testing, set starting lvl to any lvl assigned to initial_level
@@ -46,16 +47,15 @@ continue_arrow = pygame.transform.scale(continue_arrow, arrow_scaled_size)
 #todo put in function
 dead_one = pygame.image.load("stuff/characters/dead_one.jpg")
 dead_two = pygame.image.load("stuff/characters/dead_two.jpg")
-bossboy = pygame.image.load("stuff/characters/bossboy.jpg")
-bossboy_rect = bossboy.get_rect()
+
 dead_one_rect = dead_one.get_rect()
 dead_two_rect = dead_two.get_rect()
 dead_one_scaled = (int(dead_one_rect.width * 0.18), int(dead_one_rect.height * 0.18))
 dead_two_scaled = (int(dead_two_rect.width * 0.18), int(dead_two_rect.height * 0.18))
-boss_scaled = (int(bossboy_rect.width * 0.3), int(bossboy_rect.height * 0.3))
+
 dead_one = pygame.transform.scale(dead_one, dead_one_scaled)
 dead_two = pygame.transform.scale(dead_two, dead_two_scaled)
-bossboy = pygame.transform.scale(bossboy, boss_scaled)
+
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("blok gam")
 
@@ -149,7 +149,12 @@ platforms_level9 = [
 ]
 
 platforms_level10 = [
-    Platform(0, 310, 100, 20, MAGENTA)
+    Platform(0, 310, 100, 20, GREEN),
+    Platform(50, 490, 80, 20, GREEN),
+    Platform(420, 485, 80, 20, GREEN),
+    Platform(150, 390, 80, 20, GREEN),
+    Platform(300, 444, 80, 20, GREEN),
+    Platform(500, 395, 80, 20, GREEN)
 ]
 
 level_5_start_time = None
@@ -189,6 +194,8 @@ levels = {
         "platforms" : platforms_level10
     }
 }
+
+boss = Boss(250, 410)
 
 #=================== game loop =====================
 
@@ -284,10 +291,16 @@ while running:
 
     if current_level == 9:
 
-        screen.blit(bossboy, (250, 410))
+        screen.blit(boss.image, (250, 410))
         screen.blit(dead_one, (100, 540))
         screen.blit(dead_two, (480, 540))
 
+    if current_level == 10:
+
+        target_x = 410
+        target_y = 25
+        boss.update(target_x, target_y)
+        boss.render(screen)
 
     #======= collision handling, level advancement  =========
                     

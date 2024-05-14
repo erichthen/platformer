@@ -223,3 +223,26 @@ class FallingLava:
 
             if lava_block.rect.y > y_limit:
                 block_list.remove(lava_block)
+
+class Boss:
+    def __init__(self, x, y):
+        self.image = pygame.image.load("stuff/characters/bossboy.jpg")
+        self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * 0.3), int(self.image.get_height() * 0.3)))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.moving_right = True
+        self.moving_up = False
+
+    def update(self, target_x, target_y):
+        if self.moving_right:
+            self.rect.x += 5
+            if self.rect.x >= target_x:
+                self.moving_right = False
+                self.moving_up = True
+        if self.moving_up:
+            self.rect.y -= 5
+            if self.rect.y <= target_y:
+                self.moving_up = False
+
+    def render(self, screen):
+        screen.blit(self.image, self.rect.topleft)
