@@ -70,7 +70,7 @@ class Player:
                 if self.standing_on_platform.x_move_speed != 0:
                     self.rect.x += self.standing_on_platform.x_move_speed * self.standing_on_platform.x_direction
             
-                if self.standing_on_platformy_move_speed != 0:
+                if self.standing_on_platform.y_move_speed != 0:
                     self.rect.y += self.standing_on_platform.y_move_speed * self.standing_on_platform.y_direction
 
                 # If on the last platform, if you jump you can still

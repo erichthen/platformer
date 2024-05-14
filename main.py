@@ -10,7 +10,7 @@ pygame.font.init()
 
 #for easier testing, var to spawn at any level and to respawn at the same level
 #will make the game annoying by taking this away when finished ;<)
-initial_level = 2
+initial_level = 1
 current_level = initial_level
 
 #for easier testing, set starting lvl to any lvl assigned to initial_level
