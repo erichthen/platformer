@@ -9,9 +9,16 @@ from objects import Player, Platform, Lava, FallingLava, Boss
 pygame.init()
 pygame.font.init() 
 
+pygame.mixer.init()
+pygame.mixer.music.load("stuff/background_music.mp3")
+
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.2)
+
+
 #for easier testing, var to spawn at any level and to respawn at the same level
 #will make the game annoying by taking this away when finished ;<)
-initial_level = 9
+initial_level = 1
 current_level = initial_level
 
 #for easier testing, set starting lvl to any lvl assigned to initial_level
@@ -203,6 +210,7 @@ running = True
 while running:
 
     screen.fill(BLACK)
+    
 
     #====== event handling ========
 
@@ -338,10 +346,24 @@ while running:
 
         if keys[pygame.K_LEFT] or keys[pygame.K_a] or keys[pygame.K_j]:
             player.velocity[0] = -5
+            if not player.on_ground:
+                player.update_image('left', jumping = True)
+            else:
+                player.update_image('left', jumping = False)
+
         elif keys[pygame.K_RIGHT] or keys[pygame.K_d] or keys[pygame.K_l]:
             player.velocity[0] = 5
+            if not player.on_ground:
+                player.update_image('right', jumping = True)
+            else:
+                player.update_image('right', jumping = False)
+
         else:
             player.velocity[0] = 0
+            if not player.on_ground:
+                player.update_image('still', jumping = True)
+            else:
+                player.update_image('still', jumping = False)
 
 
     #===== updating and rendering ===== 

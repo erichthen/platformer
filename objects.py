@@ -5,7 +5,27 @@ class Player:
 
     def __init__(self, x, y):
 
-        self.rect = pygame.Rect(x, y, 40, 40)
+   
+
+        self.images = {
+            'still' : pygame.image.load("stuff/characters/player.png"),
+            'right' : pygame.image.load("stuff/characters/player_right.png"),
+            'left' : pygame.image.load("stuff/characters/player_left.png"),
+            'jump_still' : pygame.image.load("stuff/characters/player_jump_still.png"),
+            'jump_right' : pygame.image.load("stuff/characters/player_jump_right.png"),
+            'jump_left' : pygame.image.load("stuff/characters/player_jump_left.png")
+        }
+
+        self.images['still'] = pygame.transform.scale(self.images['still'], (45, 45))
+        self.images['right'] = pygame.transform.scale(self.images['right'], (45, 45))
+        self.images['left'] = pygame.transform.scale(self.images['left'], (45, 45))
+        self.images['jump_still'] = pygame.transform.scale(self.images['jump_still'], (45, 45))
+        self.images['jump_right'] = pygame.transform.scale(self.images['jump_right'], (45, 45))
+        self.images['jump_left'] = pygame.transform.scale(self.images['jump_left'], (45, 45))
+
+        self.image = self.images['still']
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x,y)
         self.velocity = [0,0]
         self.on_ground = False
         self.waiting_to_respawn = False
@@ -110,10 +130,36 @@ class Player:
         if self.on_ground:
             self.velocity[1] -= 15
             self.on_ground = False
-        
 
+
+    def update_image(self, direction, jumping):
+
+        if jumping:
+
+            if direction == 'left':
+                self.image = self.images['jump_left']
+            
+            elif direction == 'right':
+                self.image = self.images['jump_right']
+            
+            else:
+                self.image = self.images['jump_still']
+        
+        else:
+
+            if direction == 'left':
+                self.image = self.images['left']
+
+            elif direction == 'right':
+                self.image = self.images['right']
+
+            else:
+                self.image = self.images['still']
+
+
+        
     def render(self, screen):
-        pygame.draw.rect(screen, (0, 0, 255), self.rect)
+        screen.blit(self.image, self.rect.topleft)
 
 
 
@@ -225,6 +271,7 @@ class FallingLava:
                 block_list.remove(lava_block)
 
 class Boss:
+    
     def __init__(self, x, y):
         self.image = pygame.image.load("stuff/characters/bossboy.jpg")
         self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * 0.3), int(self.image.get_height() * 0.3)))
