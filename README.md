@@ -5,5 +5,3 @@
 preview (lvl 3)  
 ![](stuff/preview.png)  
 
-video of game (to be updated)    
-(https://youtu.be/E5QfdcxjNOk)
