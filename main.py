@@ -1,19 +1,22 @@
 import pygame
 from objects import Player, Platform, Lava, FallingLava, Boss
 
-#todo: give player a face
-#also, give him differnet faces depending on if he is going right, left, or jumping
 
 #=======setting up ========
+
+#todo, boost platforms and circular movements
 
 pygame.init()
 pygame.font.init() 
 
 pygame.mixer.init()
-pygame.mixer.music.load("stuff/background_music.mp3")
+pygame.mixer.music.load("stuff/background_music.wav")
 
 pygame.mixer.music.play(-1)
-pygame.mixer.music.set_volume(0.2)
+pygame.mixer.music.set_volume(0.33)
+
+oof = pygame.mixer.Sound("stuff/died.wav")
+jump_sound = pygame.mixer.Sound("stuff/jump.mp3")
 
 
 #for easier testing, var to spawn at any level and to respawn at the same level
@@ -150,12 +153,19 @@ platforms_level8 = [
 
 platforms_level9 = [
 
+    Platform(0, 400, 80, 20, MAGENTA),
+   
+
+]
+
+platforms_level10 = [
+
     Platform(0, 210, 100, 20, MAGENTA),
     Platform(150, 310, 500, 20, MAGENTA)
 
 ]
 
-platforms_level10 = [
+platforms_level11 = [
     Platform(0, 310, 100, 20, GREEN),
     Platform(50, 490, 80, 20, GREEN),
     Platform(420, 485, 80, 20, GREEN),
@@ -166,6 +176,7 @@ platforms_level10 = [
 
 level_5_start_time = None
 show_arrow = False
+space_bar_pressed = False
 
 #map current level var to platforms list 
 #todo prob a better way to map this
@@ -199,6 +210,9 @@ levels = {
     },
     10: {
         "platforms" : platforms_level10
+    },
+    11: {
+        "platforms" : platforms_level11
     }
 }
 
@@ -219,13 +233,15 @@ while running:
         if event.type == pygame.QUIT:
             pygame.quit()
             running = False
-        
-        if event.type == pygame.KEYDOWN:
+
+        if event.type == pygame.KEYUP:
             if event.key == pygame.K_SPACE:
-                player.jump()
+                space_bar_pressed = False
+
         
         if event.type == pygame.USEREVENT and player.waiting_to_respawn:
-            #current_level = 1
+
+            current_level = 1
             lava.reset()
             player.respawn(SPAWN_POINT)
             show_arrow = False
@@ -233,8 +249,8 @@ while running:
             falling_lava_blocks_level8.clear()
             level_5_start_time = None
             pygame.time.set_timer(pygame.USEREVENT, 0) 
-      
 
+      
         if event.type == RESET_FLAG:
             player.recently_on_last_platform = False
             pygame.time.set_timer(RESET_FLAG, 0) 
@@ -297,13 +313,13 @@ while running:
             
             continue
 
-    if current_level == 9:
+    if current_level == 10:
 
         screen.blit(boss.image, (250, 410))
         screen.blit(dead_one, (100, 540))
         screen.blit(dead_two, (480, 540))
 
-    if current_level == 10:
+    if current_level == 11:
 
         target_x = 410
         target_y = 25
@@ -314,6 +330,7 @@ while running:
                     
 
     if player.check_lava_collision(lava) and not player.waiting_to_respawn:
+        oof.play()
         player.lava_collide()  
         pygame.time.set_timer(pygame.USEREVENT, RESPAWN_TIME)
 
@@ -333,6 +350,7 @@ while running:
 
         else:
 
+            oof.play()
             player.rect.x, player.rect.y = -100, -100
             player.waiting_to_respawn = True
             pygame.time.set_timer(pygame.USEREVENT, RESPAWN_TIME)
@@ -343,6 +361,13 @@ while running:
     keys = pygame.key.get_pressed()
 
     if not player.waiting_to_respawn:
+
+
+        if keys[pygame.K_SPACE]:
+            if not space_bar_pressed:
+                jump_sound.play()
+                player.jump()
+                space_bar_pressed = True
 
         if keys[pygame.K_LEFT] or keys[pygame.K_a] or keys[pygame.K_j]:
             player.velocity[0] = -5

@@ -1,11 +1,14 @@
 import pygame
 import random
 
+pygame.mixer.init()
+oof = pygame.mixer.Sound("stuff/died.wav")
+
 class Player:
 
     def __init__(self, x, y):
 
-   
+        #face changes with jump and direction
 
         self.images = {
             'still' : pygame.image.load("stuff/characters/player.png"),
@@ -262,9 +265,10 @@ class FallingLava:
             lava_block.render(screen)
 
             if player.rect.colliderect(lava_block.rect):
-                block_list.clear()
+                pygame.mixer.Sound.play(oof)
                 player.waiting_to_respawn = True
                 pygame.time.set_timer(respawn_event, respawn_time)
+                block_list.clear()
                 break 
 
             if lava_block.rect.y > y_limit:
